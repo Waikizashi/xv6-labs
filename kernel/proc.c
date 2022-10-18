@@ -12,6 +12,7 @@ struct proc proc[NPROC];
 
 struct proc *initproc;
 
+
 int nextpid = 1;
 struct spinlock pid_lock;
 
@@ -683,4 +684,16 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+uint64 getUsedProc(){
+  uint64 ans;
+  ans = 0;
+  // loop in proc array, calculate the sum of proc which state != UNUSED
+  for(int i = 0;i<NPROC;i++){
+    if(proc[i].state!=UNUSED){
+      ans+=1;
+    }
+  }
+  return ans;
 }

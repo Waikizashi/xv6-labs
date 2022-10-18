@@ -5,6 +5,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
 
 uint64
 sys_exit(void)
@@ -99,7 +100,29 @@ sys_trace(void)
     //никогда не настанет ошибка
     myproc()->trace_mask = mask; //nastavujeme tu masku
     //вызвали функцию, возвращает структуру,
-    // struct p = myproc();
-    // *p->trace_mask = mask;   -равносильно
+//    struct p = myproc();
+//    *p->trace_mask = mask;   -равносильно
     return 0;
 }
+
+uint64 sys_sysinfo(void){
+  struct proc * p;
+  struct sysinfo info;
+  uint64 userInfoPointer;
+  uint64 sysFreeMem;
+  uint64 sysUsedProc;
+  // get myproc
+  p = myproc();
+  // get pointer of struct sysinfo in user space
+  argaddr(0,&userInfoPointer);
+   
+  // get free mem
+  sysFreeMem = getFreeMem();
+  // get free proc
+  sysUsedProc = getUsedProc();
+  info.freemem = sysFreeMem;
+  info.nproc = sysUsedProc;
+  // use copy out to copy info from kernel space to user space
+  return copyout(p->pagetable,userInfoPointer,(char*)&info,sizeof(info));
+}
+
