@@ -89,3 +89,17 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+//my_trace syscalls using mask
+uint64
+sys_trace(void)
+{
+    int mask;
+    argint(0, &mask);
+    //никогда не настанет ошибка
+    myproc()->trace_mask = mask; //nastavujeme tu masku
+    //вызвали функцию, возвращает структуру,
+    // struct p = myproc();
+    // *p->trace_mask = mask;   -равносильно
+    return 0;
+}

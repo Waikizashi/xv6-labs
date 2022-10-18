@@ -280,8 +280,8 @@ int
 fork(void)
 {
   int i, pid;
-  struct proc *np;
-  struct proc *p = myproc();
+  struct proc *np;  //new process
+  struct proc *p = myproc(); //aktualny process ktory vykonava ten fork
 
   // Allocate process.
   if((np = allocproc()) == 0){
@@ -298,6 +298,10 @@ fork(void)
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
+
+  //set the same trace mask  as in parent
+  np->trace_mask = p->trace_mask;
+  //maska noveho procesu musi byt taka ista ako maska  rodicovskoho procesu
 
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
@@ -324,7 +328,6 @@ fork(void)
 
   return pid;
 }
-
 // Pass p's abandoned children to init.
 // Caller must hold wait_lock.
 void
